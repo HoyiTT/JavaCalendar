@@ -1,5 +1,6 @@
 package hoyitt.calendar;
 
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Prompt {
@@ -29,7 +30,7 @@ public class Prompt {
 		else return 0;
 	}
 	
-	public void runPrompt() {
+	public void runPrompt() throws ParseException {
 		printMenu();
 		
 		Scanner scanner = new Scanner(System.in);
@@ -38,8 +39,8 @@ public class Prompt {
         while (true){
         	System.out.println("명령 (1, 2, 3, h, q)");
         	String cmd = scanner.next();
-        	if (cmd.equals("1")) cmdRegister();
-            else if(cmd.equals("2")) cmdSearch();
+        	if (cmd.equals("1")) cmdRegister(scanner, cal);
+            else if(cmd.equals("2")) cmdSearch(scanner, cal);
             else if(cmd.equals("3")) cmdCal(scanner, cal);
             else if(cmd.equals("h")) printMenu();
             else if(cmd.equals("q")) break;
@@ -69,17 +70,43 @@ public class Prompt {
 		
 	}
 
-	private void cmdSearch() {
+	private void cmdSearch(Scanner s, Calendar c) {
 		// TODO Auto-generated method stub
+		System.out.println("[일정 검색]");
+		System.out.println("날짜를 입력해주세요 (yyyy-MM-dd).");
+		String date = s.next();
+		String plan = "";
+		try {
+			plan = c.searchPlan(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("일정 검색 중 오류거 발생했습니다.");
+		}
+		System.out.println(plan);
 		
 	}
 
-	private void cmdRegister() {
+	private void cmdRegister(Scanner s, Calendar c) throws ParseException {
 		// TODO Auto-generated method stub
-		
+		System.out.println("[새 일정 등록]");
+		System.out.println("날짜를 입력해주세요 (yyyy-MM-dd).");
+		String date = s.next();
+		String text = "";
+		System.out.println("일정을 입력해주세요.(문장의 끝에 ;를 입력해주세요.)");
+		//단어를 합쳐 문장으로 저장(편법)
+		while (true) {
+			String word = s.next();
+			text += word + " ";
+			if (word.endsWith(";")) {
+				break;
+			}
+		}
+
+		c.registerPlan(date, text);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		Prompt p = new Prompt();
 		p.runPrompt();
 	}
